@@ -1,0 +1,31 @@
+---
+
+- name: Update repository
+  raw: apt update
+
+- name: Upgrade packages
+  raw: apt upgrade -y -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"
+
+- name: Install Python 3
+  raw: test -e /usr/bin/python3 || apt-get install -y python3
+
+- name: Set authorized_keys
+  authorized_key:
+    user: root
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+- name: Set environment
+  blockinfile:
+    dest: /etc/environment
+    block: |
+      LC_ALL=en_US.UTF-8
+      LANG=en_US.UTF-8
+  register: newenv
+
+- block:
+  - name: Generate locales
+    raw: locale-gen en_US.UTF-8
+
+  - name: Reconfigure locales
+    raw: update-locale LANG=en_US.UTF-8
+    when: newenv.changed

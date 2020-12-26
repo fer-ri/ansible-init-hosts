@@ -34,10 +34,6 @@ some-host-2:port ansible_password=host_root_password
 Then run this command
 
 ```bash
-ansible-playbook -i hosts init.yml
-
-# or just
-
 ansible-playbook init.yml
 ```
 
